@@ -13,17 +13,20 @@ const bookingMachine = createMachine({
 			on: {
 				CONTINUE: "passengers",
 				CANCEL: "inicial",
+				BACK: "inicial",
 			},
 		},
 		passengers: {
 			on: {
 				DONE: "tickets",
 				CANCEL: "inicial",
+				BACK: "search",
 			},
 		},
 		tickets: {
 			on: {
 				FINISH: "inicial",
+				BACK: "passengers",
 			},
 		},
 	},

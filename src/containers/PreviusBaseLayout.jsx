@@ -1,5 +1,9 @@
 import { useMachine } from '@xstate/react';
 import bookingMachine from '../machines/bookingMachine';
+import { Nav } from '../components/Nav';
+import { StepsLayout } from './StepsLayout';
+
+import './BaseLayout.css';
 
 export const BaseLayout = () => {
     const [ state, send ] = useMachine(bookingMachine);
@@ -9,5 +13,10 @@ export const BaseLayout = () => {
     console.log("can", state.can("FINISH"));
 
 
-	return <div>Hola</div>;
+	return (
+        <div className="BaseLayout">
+            <Nav />
+            <StepsLayout state={state} send={send}/>
+        </div>
+    );
 };
