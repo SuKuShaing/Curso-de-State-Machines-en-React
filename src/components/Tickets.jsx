@@ -7,6 +7,7 @@ export const Tickets = ({ send, state }) => {
   };
 
   const { selectedCountry } = state.context;
+  const { passengers } = state.context;
 
   return (
     <div className='Tickets'>
@@ -14,6 +15,11 @@ export const Tickets = ({ send, state }) => {
       <div className='Tickets-ticket'>
         <div className='Tickets-country'>{selectedCountry}</div>
         <div className='Tickets-passengers'>
+          {
+            passengers.map((person, index) => (
+              <p className='text' key={`person-${index}`}>{person}</p>
+            ))
+          }
           <span>✈</span>
         </div>
       </div>
