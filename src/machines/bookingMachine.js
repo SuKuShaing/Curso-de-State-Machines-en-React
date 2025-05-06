@@ -10,6 +10,7 @@ const bookingMachine = createMachine(
 		},
 		states: {
 			inicial: {
+				entry: "limpiarContexto",
 				on: {
 					// START: "search",
 					START: {
@@ -31,7 +32,6 @@ const bookingMachine = createMachine(
 							selectedCountry: ({event}) => {
 								return event.selectedCountry
 							}
-							// quede en el minuto 5:23 de la clase 10 de platzi
 						})
 					},
 					CANCEL: "inicial",
@@ -43,12 +43,22 @@ const bookingMachine = createMachine(
 					DONE: "tickets",
 					CANCEL: "inicial",
 					BACK: "search",
+					ADD: {
+						target: "passengers", // se queda en el mismo estado
+						actions: assign(
+							({ context, event }) => {  // agrega el pasajero al contexto
+								return {
+									passengers: [...context.passengers, event.newPassenger],
+								};
+							},
+						)
+					},
 				},
 			},
 			tickets: {
 				on: {
-					FINISH: "inicial",
 					BACK: "passengers",
+					FINISH: "inicial",
 				},
 			},
 		},
@@ -64,6 +74,10 @@ const bookingMachine = createMachine(
 			imprimirSalida: () => {
 				console.log("Imprimir salida, que se ejecuta al salir del estado search");
 			},
+			limpiarContexto: assign({
+				passengers: [],
+				selectedCountry: '',
+			}),
 		},
 	}
 );

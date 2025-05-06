@@ -16,7 +16,7 @@ export const Nav = ({ state, send }) => {
       {!state.matches('inicial') &&
         <button onClick={goToBack} className='Nav-cancel button-secondary'>⬅</button>
       }
-      {!state.matches('inicial') &&
+      {!state.matches('inicial') && !state.matches('tickets') &&
         <button onClick={goToWelcome} className='Nav-cancel button-secondary'>Cancelar</button>
       }
     </nav>

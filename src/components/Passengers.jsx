@@ -14,8 +14,11 @@ export const Passengers = ({ state, send }) => {
 
   const submit = (e) => {
     e.preventDefault();
+    send({ type: 'ADD', newPassenger: value });
     changeValue('');
   }
+
+  const { passengers } = state.context;
 
   return (
     <form onSubmit={submit} className='Passengers'>
@@ -29,6 +32,11 @@ export const Passengers = ({ state, send }) => {
         value={value} 
         onChange={onChangeInput}
       />
+      {
+        passengers.map((person, index) => (
+          <p className='text' key={`person-${index}`}>{person}</p>
+        ))
+      }
       <div className='Passengers-buttons'>
         <button 
           className='Passengers-add button-secondary'
