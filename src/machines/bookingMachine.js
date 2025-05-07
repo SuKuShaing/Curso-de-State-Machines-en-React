@@ -1,16 +1,52 @@
-import { assign, createMachine } from "xstate";
+import { assign, createMachine, fromPromise } from "xstate";
+import { fetchCountries } from "../utils/api";
 
+// Maquina hija
+const fillCountries = {
+	initial: "loading",
+	states: {
+		loading: {
+			// documentación: https://stately.ai/docs/invoke#invoking-promises
+			invoke: {
+				id: "getCountries",
+				src: fromPromise(() => fetchCountries()),
+				onDone: {  // cuando la promesa se cumple y termina la invocación se ejecuta la acción onDone
+					target: "success",
+					actions: assign({ 
+						countries: ({event}) => event.output
+					})
+				},
+				onError: {  // cuando la promesa falla se ejecuta la acción onError
+					target: "failure",
+					actions: assign({
+						error: "Fallo el request",  // error: ({ event }) => event.error
+					}),
+				},
+			},
+		},
+		success: {},
+		failure: {
+			on: {
+				RETRY: { target: "loading" },
+			},
+		},
+	},
+};
+
+// Maquina principal
 const bookingMachine = createMachine(
 	{
 		id: "Buy plane ticket",
 		initial: "inicial",
 		context: {
 			passengers: [],
-			selectedCountry: '',
+			selectedCountry: "",
+			countries: [],
+			error: '',
 		},
 		states: {
 			inicial: {
-				entry: "limpiarContexto",
+				entry: "limpiarContexto",  // cuando entra al estado inicial se ejecuta la acción limpiarContexto
 				on: {
 					// START: "search",
 					START: {
@@ -29,14 +65,15 @@ const bookingMachine = createMachine(
 					CONTINUE: {
 						target: "passengers",
 						actions: assign({
-							selectedCountry: ({event}) => {
-								return event.selectedCountry
-							}
-						})
+							selectedCountry: ({ event }) => {
+								return event.selectedCountry;
+							},
+						}),
 					},
 					CANCEL: "inicial",
 					BACK: "inicial",
 				},
+				...fillCountries, // se agrega una maquina estado hija
 			},
 			passengers: {
 				on: {
@@ -45,17 +82,19 @@ const bookingMachine = createMachine(
 					BACK: "search",
 					ADD: {
 						target: "passengers", // se queda en el mismo estado
-						actions: assign(
-							({ context, event }) => {  // agrega el pasajero al contexto
-								return {
-									passengers: [...context.passengers, event.newPassenger],
-								};
-							},
-						)
+						actions: assign(({ context, event }) => {
+							// agrega el pasajero al contexto
+							return {
+								passengers: [...context.passengers, event.newPassenger],
+							};
+						}),
 					},
 				},
 			},
 			tickets: {
+				after: {  // transición con delay, después de 5 segundos se va al estado inicial
+					5000: "inicial",
+				},
 				on: {
 					BACK: "passengers",
 					FINISH: "inicial",
@@ -76,7 +115,9 @@ const bookingMachine = createMachine(
 			},
 			limpiarContexto: assign({
 				passengers: [],
-				selectedCountry: '',
+				selectedCountry: "",
+				countries: [],
+				error: "",
 			}),
 		},
 	}
