@@ -20,6 +20,10 @@ body {
   background-color: #293684;
 }
 
+.button:disabled:hover {
+  background-color: #4F54A7;
+}
+
 .button-secondary {
   border: none;
   background-color: rgba(255,255,255,0.8);

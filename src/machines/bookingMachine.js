@@ -77,7 +77,11 @@ const bookingMachine = createMachine(
 			},
 			passengers: {
 				on: {
-					DONE: "tickets",
+					// DONE: "tickets",
+					DONE: {
+						target: "tickets",
+						guard: "moreThanOnePassenger",  // colocamos una verificación para que no se pueda avanzar si no hay al menos un pasajero
+					},
 					CANCEL: "inicial",
 					BACK: "search",
 					ADD: {
@@ -119,6 +123,12 @@ const bookingMachine = createMachine(
 				countries: [],
 				error: "",
 			}),
+		},
+		guards: {
+			moreThanOnePassenger: ({ context }) => {
+				// si hay más de un pasajero, se puede continuar
+				return context.passengers.length > 0;
+			},
 		},
 	}
 );
