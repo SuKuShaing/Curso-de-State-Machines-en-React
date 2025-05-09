@@ -40,7 +40,8 @@ npm run deploy
 
 Si el proceso fue exitoso, la terminal nos mostrará la dirección de nuestro proyecto ya desplegado con GitHub-Pages.
 
-
+.
+.
 
 ### Solución al error al resubir una page a github usando gh-pages
 en este link está la solución original
